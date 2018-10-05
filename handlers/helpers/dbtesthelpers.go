@@ -185,3 +185,6 @@ func (m MockDB) BuildNamedConfig(configName string) (osquery_types.OsqueryNamedC
 	return osquery_types.OsqueryNamedConfig{}, nil
 }
 
+func (m MockDB) DeleteNodeByNodekey(nodeKey string) error  {
+	return nil
+}
