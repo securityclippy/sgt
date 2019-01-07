@@ -12,6 +12,12 @@ import (
 	"github.com/oktasecuritylabs/sgt/internal/pkg/filecarver"
 	"github.com/oktasecuritylabs/sgt/osquery_types"
 	"github.com/urfave/negroni"
+	"gitlab.com/clippy/ec2autocert/pkg/config"
+	"github.com/mholt/certmagic"
+	"github.com/xenolf/lego/providers/dns/route53"
+	"strconv"
+	"github.com/xenolf/lego/log"
+	"github.com/securityclippy/magicstorage"
 )
 
 // Serve will create the server listen
@@ -86,8 +92,40 @@ func Serve() error {
 		negroni.HandlerFunc(auth.AnotherValidation),
 		negroni.Wrap(apiRouter),
 	))
-	err = http.ListenAndServeTLS(":443",
-		"fullchain.pem", "privkey.pem", router)
+
+	servConfig := config.ConfigFromFile("config.json")
+
+	dnsProvider, err := route53.NewDNSProvider()
+	if err != nil {
+		return err
+	}
+
+
+	//certmagic.DNSProvider = dn
+
+	certmagic.DNSProvider = dnsProvider
+	certmagic.DefaultStorage = magicstorage.NewS3Storage(servConfig.S3BackendBucket, "us-east-1")
+
+	//testing to see if this relaunches
+
+	useStaging, err := strconv.ParseBool(servConfig.UseLEStaging)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if useStaging {
+		certmagic.CA = certmagic.LetsEncryptStagingCA
+	} else {
+		certmagic.CA = certmagic.LetsEncryptProductionCA
+	}
+
+
+	return certmagic.HTTPS([]string{servConfig.Domain}, router)
+	//m := certmanager.NewManager(servConfig, router)
+
+	//m.ServeWithAutoUpdate(servConfig.ListenAddress, router)
+	//err = http.ListenAndServeTLS(":443",
+		//"fullchain.pem", "privkey.pem", router)
 	//"fullchain.pem", "privkey.pem", handlers.LoggingHandler(os.Stdout, router))
-	return err
+	//return err
 }

@@ -14,5 +14,5 @@ aws s3 cp s3://${bucket_name}/sgt/fullchain.pem /opt/sgt/fullchain.pem
 aws s3 cp s3://${bucket_name}/sgt/privkey.pem /opt/sgt/privkey.pem
 chmod +x /opt/sgt/sgt
 cd /opt/sgt
-sleep 30
+sleep 5
 /opt/sgt/sgt server

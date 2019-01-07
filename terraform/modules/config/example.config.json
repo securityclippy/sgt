@@ -9,5 +9,12 @@
   "distributed_query_logger_firehose_stream_name": "${distributed_query_logger_firehose_stream_name}",
   "distributed_query_logger_filesystem_path": "",
   "api_token_lifetime": 14400,
-  "auto_approve_nodes": ${auto_approve_nodes}
+  "auto_approve_nodes": "${auto_approve_nodes}",
+  "domain": "${domain}",
+  "email": "${email}",
+  "hosted_zone_id": "${hosted_zone_id}",
+  "s3_backend_bucket": "${s3_backend_bucket}",
+  "renewal_threshold": ${renewal_threshold},
+  "listen_address": "${listen_address}",
+  "use_le_staging": "${use_le_staging}"
 }

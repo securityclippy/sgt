@@ -98,7 +98,8 @@ data "aws_iam_policy_document" "osquery_s3_role_policy_doc" {
       "s3:GetObject",
       "s3:ListBucket",
       "s3:ListBucketMultipartUploads",
-      "s3:PutObject"
+      "s3:PutObject",
+      "s3:DeleteObject"
     ]
     resources = [
       "${data.terraform_remote_state.datastore.s3_bucket_arn}",
@@ -137,6 +138,20 @@ data "aws_iam_policy_document" "osquery_firehose_policy_doc" {
   }
 }
 
+data "aws_iam_policy_document" "sgt_route53_policy_doc" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "route53:*"
+    ]
+    resources = [
+      #"arn:aws:route53:::hostedzone${data.aws_route53_zone.osquery-sgt-dns-zone.id}",
+      "*"
+    ]
+  }
+}
+
+
 resource "aws_iam_policy" "osquery_s3_policy" {
   name = "osquery-sgt-s3-access-policy"
   policy = "${data.aws_iam_policy_document.osquery_s3_role_policy_doc.json}"
@@ -167,6 +182,11 @@ resource "aws_iam_role_policy_attachment" "attach_policy" {
   policy_arn = "${aws_iam_policy.server_dynamo_access_policy.arn}"
 }
 
+resource "aws_iam_policy" "osquery_route53_policy" {
+  name = "osquery_sgt_route53_policy"
+  policy = "${data.aws_iam_policy_document.sgt_route53_policy_doc.json}"
+}
+
 resource "aws_iam_role_policy_attachment" "attach_s3_policy" {
   role = "${aws_iam_role.server_assume_role.name}"
   policy_arn = "${aws_iam_policy.osquery_s3_policy.arn}"
@@ -180,6 +200,11 @@ resource "aws_iam_role_policy_attachment" "attach_ssm_policy" {
 resource "aws_iam_role_policy_attachment" "attach_firehose_policy" {
   role ="${aws_iam_role.server_assume_role.name}"
   policy_arn = "${aws_iam_policy.osquery_firehose_policy.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "attach_route53_policy" {
+  role = "${aws_iam_role.server_assume_role.name}"
+  policy_arn = "${aws_iam_policy.osquery_s3_policy.arn}"
 }
 
 resource "aws_iam_instance_profile" "osquery_sgt_instance_profile" {
@@ -305,6 +330,7 @@ data "template_file" "user_data" {
 }
 
 resource "aws_launch_configuration" "osquery_sgt_LaunchConfig" {
+  name = "sgt-launch-config-${md5(file("../../../sgt"))}"
   image_id        = "${var.asg_ami_id}"
   iam_instance_profile = "${aws_iam_instance_profile.osquery_sgt_instance_profile.arn}"
   instance_type   = "${var.instance_type}"
@@ -329,7 +355,7 @@ resource "aws_autoscaling_group" "osquery-sgt_asg" {
   load_balancers = ["${aws_elb.osquery-sgt_elb.name}"]
   min_size = "${var.asg_min_size}"
   max_size = "${var.asg_max_size}"
-  wait_for_elb_capacity = 2
+  wait_for_elb_capacity = "${var.asg_min_size}"
   health_check_grace_period = 300
   health_check_type = "ELB"
   desired_capacity = "${var.asg_desired_size}"

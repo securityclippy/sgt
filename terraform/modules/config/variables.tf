@@ -18,3 +18,10 @@ variable "terraform_backend_bucket_name" {}
 
 variable "environment" {}
 variable "auto_approve_nodes" {}
+
+variable "domain" {}
+variable "subdomain" {}
+variable "email" {}
+variable "renewal_threshold" {}
+variable "listen_address" {}
+variable "use_le_staging" {}
