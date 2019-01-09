@@ -7,8 +7,6 @@ variable "region" {
 }
 
 variable "sgt_config_bucket_name" {}
-variable "full_ssl_certchain" {}
-variable "ssl_private_key" {}
 
 variable "terraform_backend_bucket_name" {}
 
@@ -18,5 +16,4 @@ variable "listen_address" {}
 variable "domain" {}
 variable "subdomain" {}
 variable "email" {}
-variable "renewal_threshold" {}
 variable "use_le_staging" {}

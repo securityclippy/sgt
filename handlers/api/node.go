@@ -1,17 +1,17 @@
 package api
 
 import (
-	"net/http"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/oktasecuritylabs/sgt/handlers/response"
 	"github.com/oktasecuritylabs/sgt/logger"
-	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
+	"net/http"
 )
 
 func DeleteNodeHandler(db ApiDB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		handleRequest := func() (error) {
+		handleRequest := func() error {
 
 			vars := mux.Vars(r)
 			nodeKey, ok := vars["node_key"]

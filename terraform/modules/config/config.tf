@@ -41,8 +41,7 @@ data "template_file" "sgt-config-file" {
     domain = "${var.subdomain}.${var.domain}"
     email = "${var.email}"
     hosted_zone_id = "${data.aws_route53_zone.osquery-sgt-dns-zone.zone_id}"
-    s3_backend_bucket = "${data.terraform_remote_state.datastore.s3_bucket_name}"
-    renewal_threshold = "${var.renewal_threshold}"
+    s3_config_bucket = "${data.terraform_remote_state.datastore.s3_bucket_name}"
     listen_address = "${var.listen_address}"
     use_le_staging = "${var.use_le_staging}"
   }
@@ -55,16 +54,3 @@ resource "aws_s3_bucket_object" "osquery-sgt-config" {
   etag = "${md5("{data.template_file.sgt-config-file.rendered}")}"
 }
 
-resource "aws_s3_bucket_object" "osquery-sgt-fullchain_pem" {
-  bucket = "${data.terraform_remote_state.datastore.s3_bucket_name}"
-  source = "../../../certs/${var.full_cert_chain}"
-  key = "sgt/fullchain.pem"
-  etag = "${md5(file("../../../certs/${var.full_cert_chain}"))}"
-}
-
-resource "aws_s3_bucket_object" "osquery-sgt-privkey_pem" {
-  bucket = "${data.terraform_remote_state.datastore.s3_bucket_name}"
-  source = "../../../certs/${var.priv_key}"
-  key = "sgt/privkey.pem"
-  etag = "${md5(file("../../../certs/${var.priv_key}"))}"
-}

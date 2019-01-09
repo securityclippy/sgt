@@ -1,14 +1,14 @@
 package dyndb
 
 import (
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/oktasecuritylabs/sgt/logger"
 	osq_types "github.com/oktasecuritylabs/sgt/osquery_types"
 )
 
-func (dyn DynDB) NewUser(u osq_types.User) (error) {
+func (dyn DynDB) NewUser(u osq_types.User) error {
 	mm, err := dynamodbattribute.MarshalMap(u)
 	if err != nil {
 		logger.Error(err)
@@ -27,7 +27,6 @@ func (dyn DynDB) NewUser(u osq_types.User) (error) {
 	return nil
 
 }
-
 
 //NewUser creates new user in DB
 func NewUser(u osq_types.User, dynamoDB *dynamodb.DynamoDB) error {
@@ -48,7 +47,6 @@ func NewUser(u osq_types.User, dynamoDB *dynamodb.DynamoDB) error {
 
 	return nil
 }
-
 
 func (dyn DynDB) GetUser(username string) (osq_types.User, error) {
 	user := osq_types.User{}

@@ -1,18 +1,16 @@
 package dyndb
 
 import (
-	"github.com/oktasecuritylabs/sgt/logger"
-	osq_types "github.com/oktasecuritylabs/sgt/osquery_types"
+	"errors"
+	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/aws"
-	"fmt"
-	"errors"
+	"github.com/oktasecuritylabs/sgt/logger"
+	osq_types "github.com/oktasecuritylabs/sgt/osquery_types"
 )
 
-
-
-func (db DynDB) ApprovePendingNode(nodeKey string) (error) {
+func (db DynDB) ApprovePendingNode(nodeKey string) error {
 	osqNode, err := db.SearchByNodeKey(nodeKey)
 	logger.Infof("here's our node that we're approving: %+v", osqNode)
 	if err != nil {
@@ -40,7 +38,6 @@ func (db DynDB) ApprovePendingNode(nodeKey string) (error) {
 
 }
 
-
 // ValidNode returns if a node is valid or note, specified by nodeKey
 func ValidNode(nodeKey string, dyn *dynamodb.DynamoDB) error {
 	db := NewDynamoDB()
@@ -59,7 +56,6 @@ func ValidNode(nodeKey string, dyn *dynamodb.DynamoDB) error {
 
 	return nil
 }
-
 
 func (db DynDB) SearchByNodeKey(nk string) (osq_types.OsqueryClient, error) {
 	type QS struct {
@@ -98,7 +94,7 @@ func (db DynDB) SearchByNodeKey(nk string) (osq_types.OsqueryClient, error) {
 
 }
 
-func (db DynDB) DeleteNodeByNodekey(nodeKey string) (error) {
+func (db DynDB) DeleteNodeByNodekey(nodeKey string) error {
 
 	type NK struct {
 		NodeKey string `json:"node_key"`
@@ -115,7 +111,7 @@ func (db DynDB) DeleteNodeByNodekey(nodeKey string) (error) {
 
 	_, err = db.DB.DeleteItem(&dynamodb.DeleteItemInput{
 		TableName: aws.String("osquery_clients"),
-		Key: av,
+		Key:       av,
 	})
 	if err != nil {
 		return err

@@ -1,15 +1,14 @@
 package dyndb
 
 import (
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/aws"
 	"fmt"
-	"strings"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/oktasecuritylabs/sgt/logger"
 	osq_types "github.com/oktasecuritylabs/sgt/osquery_types"
+	"strings"
 )
-
 
 func (dyn DynDB) GetPackByName(packName string) (osq_types.Pack, error) {
 	pack := osq_types.Pack{}
@@ -89,8 +88,7 @@ func (dyn DynDB) SearchQueryPacks(searchString string) ([]osq_types.QueryPack, e
 
 }
 
-
-func (dyn DynDB) NewQueryPack(qp osq_types.QueryPack) (error) {
+func (dyn DynDB) NewQueryPack(qp osq_types.QueryPack) error {
 	av, err := dynamodbattribute.MarshalMap(qp)
 	if err != nil {
 		logger.Error(err)
@@ -109,7 +107,7 @@ func (dyn DynDB) NewQueryPack(qp osq_types.QueryPack) (error) {
 
 }
 
-func (dyn DynDB) DeleteQueryPack(queryPackName string) (error) {
+func (dyn DynDB) DeleteQueryPack(queryPackName string) error {
 	type qs struct {
 		PackName string `json:"pack_name"`
 	}
@@ -132,8 +130,7 @@ func (dyn DynDB) DeleteQueryPack(queryPackName string) (error) {
 
 }
 
-
-func (dyn DynDB) UpsertPack(qp osq_types.QueryPack) (error) {
+func (dyn DynDB) UpsertPack(qp osq_types.QueryPack) error {
 	//Additive upsert.
 	existing, err := dyn.GetPackByName(qp.PackName)
 	if err != nil {

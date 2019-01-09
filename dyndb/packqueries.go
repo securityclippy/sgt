@@ -1,13 +1,13 @@
 package dyndb
 
 import (
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"strings"
-	osq_types "github.com/oktasecuritylabs/sgt/osquery_types"
-	"github.com/oktasecuritylabs/sgt/logger"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/oktasecuritylabs/sgt/logger"
+	osq_types "github.com/oktasecuritylabs/sgt/osquery_types"
+	"strings"
 )
 
 func (db DynDB) APISearchPackQueries(searchString string) ([]osq_types.PackQuery, error) {
@@ -32,7 +32,6 @@ func (db DynDB) APISearchPackQueries(searchString string) ([]osq_types.PackQuery
 	}
 	return results, nil
 }
-
 
 func (db DynDB) GetPackQuery(queryName string) (osq_types.PackQuery, error) {
 	type QS struct {
@@ -67,9 +66,7 @@ func (db DynDB) GetPackQuery(queryName string) (osq_types.PackQuery, error) {
 
 }
 
-
-
-func (dyn DynDB) UpsertPackQuery(pq osq_types.PackQuery) (error) {
+func (dyn DynDB) UpsertPackQuery(pq osq_types.PackQuery) error {
 	av, err := dynamodbattribute.MarshalMap(pq)
 	if err != nil {
 		logger.Warn("Marshal failed")

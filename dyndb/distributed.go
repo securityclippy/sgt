@@ -1,14 +1,14 @@
 package dyndb
 
 import (
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/oktasecuritylabs/sgt/logger"
 	osq_types "github.com/oktasecuritylabs/sgt/osquery_types"
 )
 
-func (dyn DynDB) NewDistributedQuery(dq osq_types.DistributedQuery) (error) {
+func (dyn DynDB) NewDistributedQuery(dq osq_types.DistributedQuery) error {
 	mm, err := dynamodbattribute.MarshalMap(dq)
 	if err != nil {
 		logger.Error(err)
@@ -27,8 +27,7 @@ func (dyn DynDB) NewDistributedQuery(dq osq_types.DistributedQuery) (error) {
 
 }
 
-
-func (dyn DynDB) DeleteDistributedQuery(dq osq_types.DistributedQuery) (error) {
+func (dyn DynDB) DeleteDistributedQuery(dq osq_types.DistributedQuery) error {
 	type querykey struct {
 		NodeKey string `json:"node_key"`
 	}
@@ -51,8 +50,7 @@ func (dyn DynDB) DeleteDistributedQuery(dq osq_types.DistributedQuery) (error) {
 
 }
 
-
-func (dyn DynDB) AppendDistributedQuery(dq osq_types.DistributedQuery) (error) {
+func (dyn DynDB) AppendDistributedQuery(dq osq_types.DistributedQuery) error {
 	//
 	//NOTE:  This could be optimized to take in teh results of the already made call to check if the key exists
 	// This is probably worth doing at some point when its beyond POC
@@ -90,8 +88,7 @@ func (dyn DynDB) AppendDistributedQuery(dq osq_types.DistributedQuery) (error) {
 
 }
 
-
-func (dyn DynDB) UpsertDistributedQuery(dq osq_types.DistributedQuery) (error) {
+func (dyn DynDB) UpsertDistributedQuery(dq osq_types.DistributedQuery) error {
 	//queries for node_key in dynamodb.  if found, appends queries to existing list
 	//if not found, creates item and adds queries
 	//Search for key

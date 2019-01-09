@@ -3,7 +3,10 @@ package server
 import (
 	"net/http"
 
+	"strconv"
+
 	"github.com/gorilla/mux"
+	"github.com/mholt/certmagic"
 	"github.com/oktasecuritylabs/sgt/dyndb"
 	"github.com/oktasecuritylabs/sgt/handlers/api"
 	"github.com/oktasecuritylabs/sgt/handlers/auth"
@@ -11,13 +14,10 @@ import (
 	"github.com/oktasecuritylabs/sgt/handlers/node"
 	"github.com/oktasecuritylabs/sgt/internal/pkg/filecarver"
 	"github.com/oktasecuritylabs/sgt/osquery_types"
-	"github.com/urfave/negroni"
-	"gitlab.com/clippy/ec2autocert/pkg/config"
-	"github.com/mholt/certmagic"
-	"github.com/xenolf/lego/providers/dns/route53"
-	"strconv"
-	"github.com/xenolf/lego/log"
 	"github.com/securityclippy/magicstorage"
+	"github.com/urfave/negroni"
+	"github.com/xenolf/lego/log"
+	"github.com/xenolf/lego/providers/dns/route53"
 )
 
 // Serve will create the server listen
@@ -93,22 +93,17 @@ func Serve() error {
 		negroni.Wrap(apiRouter),
 	))
 
-	servConfig := config.ConfigFromFile("config.json")
-
 	dnsProvider, err := route53.NewDNSProvider()
 	if err != nil {
 		return err
 	}
 
-
-	//certmagic.DNSProvider = dn
-
 	certmagic.DNSProvider = dnsProvider
-	certmagic.DefaultStorage = magicstorage.NewS3Storage(servConfig.S3BackendBucket, "us-east-1")
+	certmagic.DefaultStorage = magicstorage.NewS3Storage(serverConfig.S3ConfigBucket, "us-east-1")
 
 	//testing to see if this relaunches
 
-	useStaging, err := strconv.ParseBool(servConfig.UseLEStaging)
+	useStaging, err := strconv.ParseBool(serverConfig.UseLEStaging)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -119,13 +114,5 @@ func Serve() error {
 		certmagic.CA = certmagic.LetsEncryptProductionCA
 	}
 
-
-	return certmagic.HTTPS([]string{servConfig.Domain}, router)
-	//m := certmanager.NewManager(servConfig, router)
-
-	//m.ServeWithAutoUpdate(servConfig.ListenAddress, router)
-	//err = http.ListenAndServeTLS(":443",
-		//"fullchain.pem", "privkey.pem", router)
-	//"fullchain.pem", "privkey.pem", handlers.LoggingHandler(os.Stdout, router))
-	//return err
+	return certmagic.HTTPS([]string{serverConfig.Domain}, router)
 }

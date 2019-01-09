@@ -13,8 +13,7 @@
   "domain": "${domain}",
   "email": "${email}",
   "hosted_zone_id": "${hosted_zone_id}",
-  "s3_backend_bucket": "${s3_backend_bucket}",
-  "renewal_threshold": ${renewal_threshold},
+  "s3_config_bucket": "${s3_config_bucket}",
   "listen_address": "${listen_address}",
   "use_le_staging": "${use_le_staging}"
 }

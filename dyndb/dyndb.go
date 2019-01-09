@@ -3,7 +3,7 @@ package dyndb
 import (
 	"errors"
 	"fmt"
-			"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
 	"github.com/aws/aws-sdk-go/aws/ec2metadata"
@@ -44,9 +44,7 @@ func NewDynamoDB() DynDB {
 	return dynDB
 }
 
-
 // BuildNamedConfig returns the fully built Named config, minus the credentials which are supplied during node config
-
 
 func (dyn DynDB) SearchDistributedNodeKey(nk string) (osq_types.DistributedQuery, error) {
 	type nodequery struct {
@@ -80,10 +78,8 @@ func (dyn DynDB) SearchDistributedNodeKey(nk string) (osq_types.DistributedQuery
 
 }
 
-
-
 // UpsertClient upsers an osqueryClient
-func (db DynDB) UpsertClient(oc osq_types.OsqueryClient) (error) {
+func (db DynDB) UpsertClient(oc osq_types.OsqueryClient) error {
 	logger.Debugf("Upserting Client: %v", oc)
 
 	av, err := dynamodbattribute.MarshalMap(oc)
@@ -103,7 +99,6 @@ func (db DynDB) UpsertClient(oc osq_types.OsqueryClient) (error) {
 	return nil
 
 }
-
 
 func (db DynDB) SearchByHostIdentifier(hid string) ([]osq_types.OsqueryClient, error) {
 	Results := []osq_types.OsqueryClient{}
@@ -155,10 +150,7 @@ func (db DynDB) SearchByHostIdentifier(hid string) ([]osq_types.OsqueryClient, e
 
 }
 
-
-
-
-func (db DynDB) ValidNode(nodeKey string) (error) {
+func (db DynDB) ValidNode(nodeKey string) error {
 	osqNode, err := db.SearchByNodeKey(nodeKey)
 	if err != nil {
 		return err
@@ -175,12 +167,6 @@ func (db DynDB) ValidNode(nodeKey string) (error) {
 	return nil
 
 }
-
-
-
-
-
-
 
 func (db DynDB) APIGetPackQueries() ([]osq_types.PackQuery, error) {
 	results := []osq_types.PackQuery{}
@@ -202,12 +188,7 @@ func (db DynDB) APIGetPackQueries() ([]osq_types.PackQuery, error) {
 	}
 	return results, nil
 
-
 }
-
-
-
-
 
 // GetPackByName returns pack specified by name
 func GetPackByName(s string, db *dynamodb.DynamoDB) (string, error) {

@@ -1,13 +1,13 @@
 package dyndb
 
 import (
-	"fmt"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/aws"
-	osq_types "github.com/oktasecuritylabs/sgt/osquery_types"
-	"github.com/oktasecuritylabs/sgt/logger"
 	"errors"
+	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/oktasecuritylabs/sgt/logger"
+	osq_types "github.com/oktasecuritylabs/sgt/osquery_types"
 )
 
 func (db DynDB) BuildNamedConfig(configName string) (osq_types.OsqueryNamedConfig, error) {
@@ -31,7 +31,6 @@ func (db DynDB) BuildNamedConfig(configName string) (osq_types.OsqueryNamedConfi
 
 	return storedNC, nil
 }
-
 
 // UpsertNamedConfig upserts named config to dynamo db.  Returns true if successful, else false
 func (db DynDB) UpsertNamedConfig(onc *osq_types.OsqueryNamedConfig) error {

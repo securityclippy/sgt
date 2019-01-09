@@ -198,7 +198,8 @@ func deployAWSComponent(component, envName string, config DeploymentConfig) erro
 
 	args := ""
 
-	_, err = os.Stat(".terraform"); if os.IsNotExist(err) {
+	_, err = os.Stat(".terraform")
+	if os.IsNotExist(err) {
 		args = fmt.Sprintf("terraform init -backend-config=../backend.vars")
 	} else {
 		args = fmt.Sprintf("terraform init -force-copy -backend=true -backend-config=../backend.vars")
