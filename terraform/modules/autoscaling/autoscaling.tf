@@ -145,8 +145,7 @@ data "aws_iam_policy_document" "sgt_route53_policy_doc" {
       "route53:*"
     ]
     resources = [
-      #"arn:aws:route53:::hostedzone${data.aws_route53_zone.osquery-sgt-dns-zone.id}",
-      "*"
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.osquery-sgt-dns-zone.zone_id}",
     ]
   }
 }
