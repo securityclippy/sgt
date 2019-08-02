@@ -98,8 +98,9 @@ func Serve() error {
 		return err
 	}
 
-	certmagic.DNSProvider = dnsProvider
-	certmagic.DefaultStorage = magicstorage.NewS3Storage(serverConfig.S3ConfigBucket, "us-east-1")
+	cm := certmagic.New(nil, certmagic.Config{})
+	cm.DNSProvider = dnsProvider
+	cm.Storage = magicstorage.NewS3Storage(serverConfig.S3ConfigBucket, "us-east-1")
 
 	//testing to see if this relaunches
 
@@ -109,9 +110,9 @@ func Serve() error {
 	}
 
 	if useStaging {
-		certmagic.CA = certmagic.LetsEncryptStagingCA
+		cm.CA = certmagic.LetsEncryptStagingCA
 	} else {
-		certmagic.CA = certmagic.LetsEncryptProductionCA
+		cm.CA = certmagic.LetsEncryptProductionCA
 	}
 
 	return certmagic.HTTPS([]string{serverConfig.Domain}, router)
