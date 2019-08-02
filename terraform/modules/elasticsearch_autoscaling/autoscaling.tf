@@ -143,6 +143,19 @@ data "aws_iam_policy_document" "osquery_firehose_policy_doc" {
   }
 }
 
+
+data "aws_iam_policy_document" "sgt_route53_policy_doc" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "route53:*"
+    ]
+    resources = [
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.osquery-sgt-dns-zone.zone_id}",
+    ]
+  }
+}
+
 resource "aws_iam_policy" "osquery_s3_policy" {
   name = "osquery-sgt-s3-access-policy"
   policy = "${data.aws_iam_policy_document.osquery_s3_role_policy_doc.json}"
