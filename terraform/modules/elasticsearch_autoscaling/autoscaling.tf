@@ -1,8 +1,6 @@
 data "aws_caller_identity" "current" {}
 
-data "aws_region" "current" {
-  current = true
-}
+data "aws_region" "current" {}
 
 
 data "terraform_remote_state" "vpc" {
@@ -104,7 +102,8 @@ data "aws_iam_policy_document" "osquery_s3_role_policy_doc" {
       "s3:GetObject",
       "s3:ListBucket",
       "s3:ListBucketMultipartUploads",
-      "s3:PutObject"
+      "s3:PutObject",
+      "s3:DeleteObject"
     ]
     resources = [
       "${data.terraform_remote_state.datastore.s3_bucket_arn}",
@@ -151,8 +150,16 @@ data "aws_iam_policy_document" "sgt_route53_policy_doc" {
       "route53:*"
     ]
     resources = [
-      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.osquery-sgt-dns-zone.zone_id}",
+      "*",
+      #"arn:aws:route53:::hostedzone/${data.aws_route53_zone.osquery-sgt-dns-zone.zone_id}",
     ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "route53:ListHostedZonesByName"
+    ]
+    resources = ["*"]
   }
 }
 
@@ -181,9 +188,17 @@ resource "aws_iam_policy" "osquery_firehose_policy" {
   policy = "${data.aws_iam_policy_document.osquery_firehose_policy_doc.json}"
 }
 
+
+
 resource "aws_iam_role_policy_attachment" "attach_policy" {
   role = "${aws_iam_role.server_assume_role.name}"
   policy_arn = "${aws_iam_policy.server_dynamo_access_policy.arn}"
+}
+
+
+resource "aws_iam_policy" "osquery_route53_policy" {
+  name = "osquery_sgt_route53_policy"
+  policy = "${data.aws_iam_policy_document.sgt_route53_policy_doc.json}"
 }
 
 resource "aws_iam_role_policy_attachment" "attach_s3_policy" {
@@ -199,6 +214,16 @@ resource "aws_iam_role_policy_attachment" "attach_ssm_policy" {
 resource "aws_iam_role_policy_attachment" "attach_firehose_policy" {
   role ="${aws_iam_role.server_assume_role.name}"
   policy_arn = "${aws_iam_policy.osquery_firehose_policy.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "attach_route53_policy" {
+  role = "${aws_iam_role.server_assume_role.name}"
+  policy_arn = "${aws_iam_policy.osquery_s3_policy.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "attach_r53" {
+  role = "${aws_iam_role.server_assume_role.name}"
+  policy_arn = "${aws_iam_policy.osquery_route53_policy.arn}"
 }
 
 resource "aws_iam_instance_profile" "osquery_sgt_instance_profile" {
