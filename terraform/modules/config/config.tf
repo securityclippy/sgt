@@ -41,16 +41,27 @@ data "template_file" "sgt-config-file" {
     domain = "${var.subdomain}.${var.domain}"
     email = "${var.email}"
     hosted_zone_id = "${data.aws_route53_zone.osquery-sgt-dns-zone.zone_id}"
-    s3_config_bucket = "${data.terraform_remote_state.datastore.s3_bucket_name}"
+    s3_config_bucket = "${var.sgt_config_bucket}"
+    #s3_config_bucket = "${data.terraform_remote_state.datastore.s3_bucket_name}"
     listen_address = "${var.listen_address}"
     use_le_staging = "${var.use_le_staging}"
   }
 }
 
+
+resource "aws_kms_key" "sgt_config_bucket_kms_key" {
+  deletion_window_in_days = 10
+}
+
+resource "aws_s3_bucket" "sgt_config_s3_bucket" {
+  bucket = "${var.sgt_config_bucket}"
+}
+
 resource "aws_s3_bucket_object" "osquery-sgt-config" {
-  bucket = "${data.terraform_remote_state.datastore.s3_bucket_name}"
+  bucket = "${aws_s3_bucket.sgt_config_s3_bucket.bucket}"
   content = "${data.template_file.sgt-config-file.rendered}"
   key = "sgt/config.json"
   etag = "${md5("{data.template_file.sgt-config-file.rendered}")}"
 }
+
 

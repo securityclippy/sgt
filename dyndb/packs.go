@@ -23,7 +23,7 @@ func (dyn DynDB) GetPackByName(packName string) (osq_types.Pack, error) {
 	//map queryString to attribute_map
 	js, err := dynamodbattribute.MarshalMap(queryString)
 	if err != nil {
-		logger.Error(err)
+		return pack, err
 	}
 	//get pack map from dynamo
 	resp, err := dyn.DB.GetItem(&dynamodb.GetItemInput{
@@ -32,7 +32,6 @@ func (dyn DynDB) GetPackByName(packName string) (osq_types.Pack, error) {
 	})
 	if err != nil {
 		//panic(fmt.Sprintln(err, os.Stdout))
-		log.Panic(err)
 		return pack, err
 	}
 	//create empty pack to marshal data into

@@ -16,3 +16,4 @@ variable "subdomain" {}
 variable "email" {}
 variable "listen_address" {}
 variable "use_le_staging" {}
+variable "sgt_config_bucket" {}

@@ -246,6 +246,19 @@ func osqueryDefaultPacks(config DeploymentConfig, environ string) error {
 		}
 	}
 
+	credfile, err := UserAwsCredFile()
+	if err != nil {
+		return err
+	}
+
+	dynDBInstance, err := auth.CrendentialedDbInstance(credfile, config.AWSProfile)
+	if err != nil {
+		return err
+	}
+	dyn := dyndb.DynDB{
+		DB: dynDBInstance,
+	}
+
 	for _, fn := range files {
 
 		_, filename := filepath.Split(fn)
@@ -258,21 +271,10 @@ func osqueryDefaultPacks(config DeploymentConfig, environ string) error {
 				return err
 			}
 			file := strings.NewReader(s)
-			if err != nil {
-				return err
-			}
 			decoder := json.NewDecoder(file)
 			err = decoder.Decode(&helperPack)
 			if err != nil {
 				return err
-			}
-			credfile, err := UserAwsCredFile()
-			if err != nil {
-				return err
-			}
-			dynDBInstance := auth.CrendentialedDbInstance(credfile, config.AWSProfile)
-			dyn := dyndb.DynDB{
-				DB: dynDBInstance,
 			}
 			//logger.Infof("%+v", pack)
 			//logger.Infof("%+v", helperPack)
@@ -330,7 +332,10 @@ func osqueryDefaultConfigs(config DeploymentConfig, environ string) error {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	dynDB := auth.CrendentialedDbInstance(credfile, config.AWSProfile)
+	dynDB, err := auth.CrendentialedDbInstance(credfile, config.AWSProfile)
+	if err != nil {
+		return err
+	}
 	for _, fn := range files {
 		_, filename := filepath.Split(fn)
 		logger.Infof("Updating %s config", filename)
@@ -388,7 +393,7 @@ func osqueryDefaultConfigs(config DeploymentConfig, environ string) error {
 		namedConfig.OsqueryConfig = oc
 		err = dyndb.UpsertNamedConfig(dynDB, &namedConfig)
 		if err != nil {
-			logger.Infof("%s: failed\n", namedConfig.ConfigName)
+			logger.Infof("dyndb.UpsertNamedConfig: %s failed\n", namedConfig.ConfigName)
 			return err
 		}
 

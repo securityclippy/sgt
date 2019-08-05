@@ -7,7 +7,6 @@ variable "aws_region" {
 }
 
 variable "terraform_backend_bucket_name" {}
-
 variable "environment" {}
 variable "auto_approve_nodes" {}
 
@@ -16,3 +15,4 @@ variable "subdomain" {}
 variable "email" {}
 variable "listen_address" {}
 variable "use_le_staging" {}
+variable "sgt_config_bucket" {}

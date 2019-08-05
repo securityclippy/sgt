@@ -100,8 +100,8 @@ data "aws_iam_policy_document" "osquery_s3_role_policy_doc" {
       "s3:DeleteObject"
     ]
     resources = [
-      "${data.terraform_remote_state.datastore.s3_bucket_arn}",
-      "${data.terraform_remote_state.datastore.s3_bucket_arn}/*"
+      "arn:aws:s3:::${var.sgt_config_bucket}",
+      "arn:aws:s3:::${var.sgt_config_bucket}/*",
     ]
   }
 }
@@ -322,7 +322,7 @@ resource "aws_security_group_rule" "load_balancer_to_sg_egress" {
 data "template_file" "user_data" {
   template = "${file("userdata.sh")}"
   vars {
-    bucket_name = "${data.terraform_remote_state.datastore.s3_bucket_name}"
+    bucket_name = "${var.sgt_config_bucket}"
   }
 }
 

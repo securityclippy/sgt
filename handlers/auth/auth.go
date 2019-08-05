@@ -80,13 +80,35 @@ func GetSsmParam(s string) (string, error) {
 }
 
 //CrendentialedDbInstance returns an instance of dynamodb using an aws credential profile
-func CrendentialedDbInstance(fn, profile string) *dynamodb.DynamoDB {
+// This is a really janky way of getting creds and should be fixed
+func CrendentialedDbInstance(fn, profile string) (*dynamodb.DynamoDB, error) {
 	creds := credentials.NewSharedCredentials(fn, profile)
-	dynDB := dynamodb.New(session.Must(session.NewSession(&aws.Config{
-		Region:      aws.String("us-east-1"),
-		Credentials: creds,
-	})))
-	return dynDB
+	_, err := creds.Get()
+	if err == nil {
+		cfg := aws.NewConfig()
+		cfg.Region = aws.String("us-east-1")
+		cfg.Credentials = creds
+		sess, err := session.NewSession(cfg)
+		if err == nil {
+			dyDB := dynamodb.New(sess)
+			return dyDB, nil
+		}
+	}
+
+	blankCfg := aws.NewConfig()
+	blankCfg.Region = aws.String("us-east-1")
+	sess, err := session.NewSession(blankCfg)
+	if err != nil {
+		return nil, err
+	}
+
+	dynDB := dynamodb.New(sess)
+
+	if dynDB != nil {
+		return dynDB, nil
+	}
+
+	return nil, errors.New("could not aquire dyndb service")
 }
 
 //GetPass gets password
@@ -131,7 +153,10 @@ func NewUser(credentialsFile, profile, username, role string, dyn AuthDB) error 
 		Role:     role,
 	}
 
-	dynDB := CrendentialedDbInstance(credentialsFile, profile)
+	dynDB, err:= CrendentialedDbInstance(credentialsFile, profile)
+	if err != nil {
+		return err
+	}
 
 	return dyndb.NewUser(user, dynDB)
 }
