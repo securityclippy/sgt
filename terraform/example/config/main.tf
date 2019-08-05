@@ -15,4 +15,5 @@ module "config" {
   subdomain = "${var.subdomain}"
   email = "${var.email}"
   use_le_staging = "${var.use_le_staging}"
+  sgt_config_bucket = "${var.sgt_config_bucket_name}"
 }

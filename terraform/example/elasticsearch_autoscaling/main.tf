@@ -22,5 +22,6 @@ module "autoscaling" {
   terraform_backend_bucket_name = "${var.terraform_backend_bucket_name}"
   environment = "${var.environment}"
   aws_region = "${var.aws_region}"
+  sgt_config_bucket = "${var.sgt_config_bucket_name}"
 }
 

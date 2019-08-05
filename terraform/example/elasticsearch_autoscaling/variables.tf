@@ -22,3 +22,4 @@ variable "asg_desired_size" {}
 variable "terraform_backend_bucket_name" {}
 
 variable "environment" {}
+variable "sgt_config_bucket_name" {}
